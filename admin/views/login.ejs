@@ -1,12 +1,66 @@
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>Admin Login</title></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="/assets/admin.css">
+</head>
 <body>
-  <h1>Login</h1>
-  <form action="/api/auth/login" method="post">
-    <label>Email <input name="email" /></label><br>
-    <label>Password <input name="password" type="password"/></label><br>
-    <button type="submit">Login (use API client)</button>
-  </form>
+  <div class="auth-shell">
+    <div class="auth-panel">
+      <div class="auth-copy">
+        <span class="eyebrow">TSPL Admin</span>
+        <h1>Welcome back.</h1>
+        <p>Sign in to review contacts, service leads, and job applications in one place.</p>
+      </div>
+      <form id="loginForm" class="auth-form" action="/api/auth/login" method="post">
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="username" placeholder="admin@company.com" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
+        </label>
+        <p id="loginMessage" class="form-message" aria-live="polite"></p>
+        <button type="submit" class="primary-btn">Sign in</button>
+        <p class="auth-note">Your browser session is secured with an httpOnly token cookie.</p>
+      </form>
+    </div>
+  </div>
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const loginMessage = document.getElementById('loginMessage');
+
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      loginMessage.textContent = 'Signing in...';
+      loginMessage.className = 'form-message';
+
+      try {
+        const response = await fetch(loginForm.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: loginForm.email.value,
+            password: loginForm.password.value
+          })
+        });
+
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error || 'Login failed');
+        }
+
+        window.location.href = '/admin/dashboard?section=contacts';
+      } catch (error) {
+        loginMessage.textContent = error.message || 'Unable to sign in';
+        loginMessage.className = 'form-message error';
+      }
+    });
+  </script>
 </body>
 </html>

@@ -6,14 +6,35 @@ require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET || 'devsecret';
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'missing' });
-  const user = await User.findOne({ where: { email } });
-  if (!user) return res.status(401).json({ error: 'invalid' });
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) return res.status(401).json({ error: 'invalid' });
-  const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '12h' });
-  res.json({ token });
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'missing' });
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(401).json({ error: 'invalid' });
+
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) return res.status(401).json({ error: 'invalid' });
+
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '12h' });
+    const cookieOptions = [
+      'admin_token=' + token,
+      'HttpOnly',
+      'Path=/',
+      'SameSite=Lax',
+      'Max-Age=' + (12 * 60 * 60)
+    ];
+
+    if (process.env.NODE_ENV === 'production') {
+      cookieOptions.push('Secure');
+    }
+
+    res.setHeader('Set-Cookie', cookieOptions.join('; '));
+    res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
+  } catch (error) {
+    console.error('Login failed', error);
+    res.status(500).json({ error: 'login_failed' });
+  }
 };
 
 exports.createAdmin = async (req, res) => {

@@ -42,6 +42,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/static', express.static(path.join(__dirname, process.env.UPLOAD_DIR || 'uploads')));
+app.use('/assets', express.static(path.join(__dirname, 'public')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/forms', formRoutes);

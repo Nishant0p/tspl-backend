@@ -11,6 +11,11 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
+router.get('/logout', (req, res) => {
+  res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax');
+  res.redirect('/admin/login');
+});
+
 // Admin dashboard routes
 router.get('/dashboard', authenticate, async (req, res) => {
   try {

@@ -1,19 +1,47 @@
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>List</title></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title || 'Admin List' %></title>
+  <link rel="stylesheet" href="/assets/admin.css">
+</head>
 <body>
-  <h1><%= title %></h1>
-  <table border="1">
-    <thead><tr><% Object.keys(items[0] || {}).forEach(h=>{ %><th><%= h %></th><% }) %></tr></thead>
-    <tbody>
-      <% items.forEach(it=>{ %>
-        <tr>
-          <% Object.keys(it).forEach(k=>{ %>
-            <td><%= it[k] %></td>
-          <% }) %>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
+  <div class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <span class="eyebrow">TSPL Admin</span>
+        <h1><%= title || 'List view' %></h1>
+        <p>A simple data grid for any additional admin records.</p>
+      </div>
+      <div class="header-actions">
+        <a class="ghost-btn" href="/admin/dashboard?section=contacts">Dashboard</a>
+        <a class="ghost-btn" href="/admin/logout">Logout</a>
+      </div>
+    </header>
+
+    <section class="card table-card">
+      <div class="card-head">
+        <h2>Records</h2>
+        <span class="badge"><%= (items && items.length) || 0 %> records</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><% Object.keys(items[0] || {}).forEach(h=>{ %><th><%= h %></th><% }) %></tr>
+          </thead>
+          <tbody>
+            <% items.forEach(it=>{ %>
+              <tr>
+                <% Object.keys(it).forEach(k=>{ %>
+                  <td><%= it[k] %></td>
+                <% }) %>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
 </body>
 </html>
