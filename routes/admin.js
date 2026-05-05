@@ -99,4 +99,34 @@ router.post('/delete/:type/:id', authenticate, async (req, res) => {
   }
 });
 
+// Delete admin (only for super admin)
+router.post('/delete-admin/:id', authenticate, async (req, res) => {
+  if (!req.user || req.user.role !== 'super') return res.status(403).send('Forbidden');
+  try {
+    const { User } = require('../models');
+    // Prevent deleting super admin (ensure role is admin)
+    const deletedCount = await User.destroy({ where: { id: req.params.id, role: 'admin' } });
+    if (!deletedCount) return res.status(404).send('Admin not found');
+    res.redirect('/admin/add-admin');
+  } catch (err) {
+    res.status(500).send('Error deleting admin');
+  }
+});
+
+// Update admin password (only for super admin)
+router.post('/update-admin-password/:id', authenticate, async (req, res) => {
+  if (!req.user || req.user.role !== 'super') return res.status(403).send('Forbidden');
+  try {
+    const { User } = require('../models');
+    const bcrypt = require('bcrypt');
+    if (!req.body.newPassword) return res.status(400).send('New password required');
+    const hash = await bcrypt.hash(req.body.newPassword, 10);
+    const [updatedCount] = await User.update({ passwordHash: hash }, { where: { id: req.params.id, role: 'admin' } });
+    if (!updatedCount) return res.status(404).send('Admin not found');
+    res.redirect('/admin/add-admin');
+  } catch (err) {
+    res.status(500).send('Error updating password');
+  }
+});
+
 module.exports = router;

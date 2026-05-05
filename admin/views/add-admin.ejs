@@ -49,6 +49,7 @@
               <th>Email</th>
               <th>Role</th>
               <th>Created At</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -58,6 +59,17 @@
                 <td><strong><%= admin.email %></strong></td>
                 <td><span class="badge"><%= admin.role %></span></td>
                 <td><%= new Date(admin.createdAt).toLocaleString() %></td>
+                <td>
+                  <div class="row-actions">
+                    <form class="row-action-form" action="/admin/update-admin-password/<%= admin.id %>" method="POST">
+                      <input name="newPassword" type="password" placeholder="New password" autocomplete="new-password" required />
+                      <button type="submit" class="btn primary">Update Password</button>
+                    </form>
+                    <form class="row-action-form" action="/admin/delete-admin/<%= admin.id %>" method="POST" onsubmit="return confirm('Delete this admin account?');">
+                      <button type="submit" class="btn secondary">Remove Admin</button>
+                    </form>
+                  </div>
+                </td>
               </tr>
             <% }); %>
           </tbody>
