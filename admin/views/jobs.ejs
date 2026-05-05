@@ -80,10 +80,10 @@
                   <td>
                     <div class="actions">
                       <% if (item.cv) { %>
-                        <a class="btn primary" href="<%= item.cv %>" target="_blank">View CV</a>
+                        <button class="btn primary" onclick="previewFile('<%= item.cv %>', 'cv')">View CV</button>
                       <% } %>
                       <% if (item.pdf) { %>
-                        <a class="btn primary" href="<%= item.pdf %>" target="_blank">View PDF</a>
+                        <button class="btn primary" onclick="previewFile('<%= item.pdf %>', 'pdf')">View PDF</button>
                       <% } %>
                       <% if (item.cv) { %>
                         <a class="btn secondary" href="<%= item.cv %>" download>Download CV</a>
@@ -103,5 +103,52 @@
       </section>
     <% } %>
   </div>
+
+  <!-- File Preview Modal -->
+  <div id="fileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="fileTitle">File Preview</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="fileContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    function previewFile(filename, type) {
+      const fileModal = document.getElementById('fileModal');
+      const fileContainer = document.getElementById('fileContainer');
+      const fileTitle = document.getElementById('fileTitle');
+      
+      const cleanName = filename.split('/').pop();
+      fileTitle.textContent = `Preview: ${cleanName}`;
+      fileContainer.innerHTML = '';
+      
+      const fileUrl = filename; // DB stores the full URL/path like /public/uploads/cvs/...
+      
+      if (filename.toLowerCase().endsWith('.pdf')) {
+        fileContainer.innerHTML = `<iframe class="file-embed" src="${fileUrl}"></iframe>`;
+      } else if (['.jpg', '.jpeg', '.png', '.gif'].some(ext => filename.toLowerCase().endsWith(ext))) {
+        fileContainer.innerHTML = `<img class="file-embed" src="${fileUrl}" alt="Preview" style="object-fit: contain;" />`;
+      } else {
+        fileContainer.innerHTML = `<p>File type not supported for preview. <a href="${fileUrl}" download>Download instead</a></p>`;
+      }
+      
+      fileModal.classList.add('show');
+    }
+
+    function closeModal() {
+      const fileModal = document.getElementById('fileModal');
+      fileModal.classList.remove('show');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('fileModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  </script>
 </body>
 </html>
