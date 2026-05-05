@@ -62,7 +62,7 @@
                       General Inquiry
                     <% } %>
                   </td>
-                  <td class="truncate"><%= item.message || 'No message' %></td>
+                  <td style="max-width: 400px; word-wrap: break-word; white-space: pre-wrap;"><%= item.message || 'No message' %></td>
                   <td><%= new Date(item.createdAt).toLocaleString() %></td>
                   <% if (user && user.role === 'super') { %>
                     <td>
