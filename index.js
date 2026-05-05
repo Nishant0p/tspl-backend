@@ -51,7 +51,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/admin', adminRoutes);
 
-app.get('/', (req, res) => res.redirect('/admin/login'));
+app.get('/', (req, res) => {
+  res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax');
+  res.redirect('/admin/login');
+});
 
 async function ensureSuper() {
   const count = await User.count();
