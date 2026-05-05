@@ -3,6 +3,14 @@ const router = express.Router();
 const { Contact, Service, Job } = require('../models');
 const { authenticate } = require('../utils/middleware');
 
+router.get('/', (req, res) => {
+  res.redirect('/admin/login');
+});
+
+router.get('/login', (req, res) => {
+  res.render('login');
+});
+
 // Admin dashboard routes
 router.get('/dashboard', authenticate, async (req, res) => {
   try {
