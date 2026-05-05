@@ -65,7 +65,7 @@ async function ensureSuper() {
 async function start() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     await ensureSuper();
     app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
   } catch (e) {
