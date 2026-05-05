@@ -48,7 +48,8 @@ router.get('/dashboard', authenticate, async (req, res) => {
         },
         recentContacts,
         recentServices,
-        recentJobs
+        recentJobs,
+        user: req.user
       });
     }
     
