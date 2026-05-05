@@ -23,6 +23,28 @@ router.get('/logout', (req, res) => {
 router.get('/dashboard', authenticate, async (req, res) => {
   try {
     const section = req.query.section || 'contacts';
+
+    if (!req.query.section) {
+      const [contactCount, serviceCount, jobCount, recentContacts, recentServices, recentJobs] = await Promise.all([
+        Contact.count(),
+        Service.count(),
+        Job.count(),
+        Contact.findAll({ order: [['createdAt', 'DESC']], limit: 5 }),
+        Service.findAll({ order: [['createdAt', 'DESC']], limit: 5 }),
+        Job.findAll({ order: [['createdAt', 'DESC']], limit: 5 })
+      ]);
+
+      return res.render('dashboard', {
+        stats: {
+          contacts: contactCount,
+          services: serviceCount,
+          jobs: jobCount
+        },
+        recentContacts,
+        recentServices,
+        recentJobs
+      });
+    }
     
     if (section === 'contacts') {
       const items = await Contact.findAll({ order: [['createdAt', 'DESC']] });

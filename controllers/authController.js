@@ -6,9 +6,11 @@ require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET || 'devsecret';
 
 exports.login = async (req, res) => {
+  const acceptHeader = req.headers.accept || '';
+  const wantsBrowserRedirect = req.body.browserLogin === '1' || acceptHeader.includes('text/html') || acceptHeader.includes('application/xhtml+xml');
+
   try {
     const { email, password } = req.body;
-    const wantsBrowserRedirect = req.body.browserLogin === '1';
     if (!email || !password) return res.status(400).json({ error: 'missing' });
 
     const user = await User.findOne({ where: { email } });
@@ -39,13 +41,13 @@ exports.login = async (req, res) => {
     res.setHeader('Set-Cookie', cookieOptions.join('; '));
 
     if (wantsBrowserRedirect) {
-      return res.redirect('/admin/dashboard?section=contacts');
+      return res.redirect('/admin/dashboard');
     }
 
     res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
     console.error('Login failed', error);
-    if (req.body && req.body.browserLogin === '1') {
+    if (wantsBrowserRedirect) {
       return res.redirect('/admin/login?error=1');
     }
     res.status(500).json({ error: 'login_failed' });

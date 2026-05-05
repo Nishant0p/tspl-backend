@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/assets/admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <span class="eyebrow">TSPL Admin</span>
+        <h1>Dashboard overview</h1>
+        <p>See all frontend submissions in one place and jump into any section when needed.</p>
+      </div>
+      <div class="header-actions">
+        <a class="ghost-btn" href="/admin/logout">Logout</a>
+      </div>
+    </header>
+
+    <nav class="tab-bar">
+      <a href="/admin/dashboard" class="active">Overview</a>
+      <a href="/admin/dashboard?section=contacts">Contacts</a>
+      <a href="/admin/dashboard?section=services">Services</a>
+      <a href="/admin/dashboard?section=jobs">Jobs</a>
+    </nav>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Submission stats</h2>
+        <span class="badge">Live data</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Contacts</span>
+          <strong><%= stats.contacts %></strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Services</span>
+          <strong><%= stats.services %></strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Jobs</span>
+          <strong><%= stats.jobs %></strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card overview-stack">
+      <div class="card-head">
+        <h2>Latest contacts</h2>
+        <a class="ghost-btn" href="/admin/dashboard?section=contacts">Open all</a>
+      </div>
+      <% if (recentContacts && recentContacts.length > 0) { %>
+        <div class="overview-list">
+          <% recentContacts.forEach(item => { %>
+            <div class="overview-row">
+              <div>
+                <strong><%= item.name || 'N/A' %></strong>
+                <p><%= item.email || 'N/A' %></p>
+              </div>
+              <span><%= new Date(item.createdAt).toLocaleString() %></span>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <p class="empty-inline">No contact submissions yet.</p>
+      <% } %>
+    </section>
+
+    <section class="card overview-stack">
+      <div class="card-head">
+        <h2>Latest services</h2>
+        <a class="ghost-btn" href="/admin/dashboard?section=services">Open all</a>
+      </div>
+      <% if (recentServices && recentServices.length > 0) { %>
+        <div class="overview-list">
+          <% recentServices.forEach(item => { %>
+            <div class="overview-row">
+              <div>
+                <strong><%= item.name || 'N/A' %></strong>
+                <p><%= item.email || 'N/A' %></p>
+              </div>
+              <span><%= new Date(item.createdAt).toLocaleString() %></span>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <p class="empty-inline">No service enquiries yet.</p>
+      <% } %>
+    </section>
+
+    <section class="card overview-stack">
+      <div class="card-head">
+        <h2>Latest jobs</h2>
+        <a class="ghost-btn" href="/admin/dashboard?section=jobs">Open all</a>
+      </div>
+      <% if (recentJobs && recentJobs.length > 0) { %>
+        <div class="overview-list">
+          <% recentJobs.forEach(item => { %>
+            <div class="overview-row">
+              <div>
+                <strong><%= item.name || 'N/A' %></strong>
+                <p><%= item.email || 'N/A' %></p>
+              </div>
+              <span><%= new Date(item.createdAt).toLocaleString() %></span>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <p class="empty-inline">No job applications yet.</p>
+      <% } %>
+    </section>
+  </div>
+</body>
+</html>
