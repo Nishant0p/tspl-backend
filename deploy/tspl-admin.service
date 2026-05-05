@@ -1,0 +1,17 @@
+[Unit]
+Description=TSPL Admin Backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/home/youruser/path/to/tspl-admin-backend
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
+Environment=NODE_ENV=production
+# Add DB and secret env vars or use a .env file and a process manager that loads it
+Environment=DATABASE_URL=postgres://user:pass@localhost:5432/tspl_admin
+Environment=JWT_SECRET=replace_with_secure_secret
+
+[Install]
+WantedBy=multi-user.target
