@@ -8,6 +8,29 @@ require('dotenv').config();
 const STRAPI_ENDPOINT = process.env.STRAPI_ENDPOINT;
 const UPLOAD_DIR = path.join(__dirname, '../public/uploads/cvs');
 
+function parseMetadata(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return {};
+  }
+}
+
+function inferSubmissionType(body, files) {
+  const explicitType = (body.type || '').toLowerCase();
+  if (['contact', 'service', 'job'].includes(explicitType)) return explicitType;
+
+  if (files && (files.pdf || files.cv)) return 'job';
+
+  const metadata = parseMetadata(body.metadata);
+  if (metadata.jobTitle || metadata.company || metadata.resume || metadata.cv) return 'job';
+  if (metadata.service || body.service) return 'service';
+
+  return 'contact';
+}
+
 async function appendExcel(sheetName, row) {
   const file = path.join(UPLOAD_DIR, `${sheetName}.xlsx`);
   const workbook = new ExcelJS.Workbook();
@@ -38,13 +61,14 @@ async function forwardToStrapi(pathname, payload) {
 }
 
 exports.submit = async (req, res) => {
-  const type = req.body.type || 'contact';
+  const type = inferSubmissionType(req.body, req.files);
+  const metadata = parseMetadata(req.body.metadata);
   const data = {
     name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
     message: req.body.message,
-    metadata: req.body.metadata ? JSON.parse(req.body.metadata) : {}
+    metadata
   };
 
   try {
