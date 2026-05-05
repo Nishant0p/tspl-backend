@@ -51,7 +51,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/admin', adminRoutes);
 
-app.get('/', (req, res) => res.send('tspl-admin-backend running'));
+app.get('/', (req, res) => res.redirect('/admin/login'));
 
 async function ensureSuper() {
   const count = await User.count();
