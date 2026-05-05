@@ -71,4 +71,26 @@ router.get('/dashboard', authenticate, async (req, res) => {
   }
 });
 
+// Delete record (only for super admin)
+router.post('/delete/:type/:id', authenticate, async (req, res) => {
+  if (!req.user || req.user.role !== 'super') {
+    return res.status(403).send('Forbidden');
+  }
+  
+  const { type, id } = req.params;
+  try {
+    if (type === 'contact') {
+      await Contact.destroy({ where: { id } });
+    } else if (type === 'service') {
+      await Service.destroy({ where: { id } });
+    } else if (type === 'job') {
+      await Job.destroy({ where: { id } });
+    }
+    res.redirect(req.get('referer') || `/admin/dashboard?section=${type}s`);
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Error deleting record');
+  }
+});
+
 module.exports = router;

@@ -46,6 +46,9 @@
                 <th>City</th>
                 <th>Message</th>
                 <th>Submitted</th>
+                <% if (user && user.role === 'super') { %>
+                  <th>Actions</th>
+                <% } %>
               </tr>
             </thead>
             <tbody>
@@ -77,6 +80,13 @@
                   </td>
                   <td class="truncate"><%= item.message || 'No message' %></td>
                   <td><%= new Date(item.createdAt).toLocaleString() %></td>
+                  <% if (user && user.role === 'super') { %>
+                    <td>
+                      <form action="/admin/delete/service/<%= item.id %>" method="POST" onsubmit="return confirm('Delete this service enquiry?');">
+                        <button type="submit" class="btn secondary" style="color: #dc2626; padding: 8px 12px; font-size: 14px; border-color: #fecaca; background: #fef2f2;" title="Delete">&#10005;</button>
+                      </form>
+                    </td>
+                  <% } %>
                 </tr>
               <% }); %>
             </tbody>
