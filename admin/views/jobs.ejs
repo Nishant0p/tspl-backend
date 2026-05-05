@@ -86,7 +86,7 @@
                         <button class="btn primary" onclick="previewFile('<%= item.pdf %>', 'pdf')">View PDF</button>
                       <% } %>
                       <% if (item.cv) { %>
-                        <a class="btn secondary" href="/api/forms/download/<%= item.cv %>" download>Download CV</a>
+                        <a class="btn secondary" href="<%= item.cv %>" download>Download CV</a>
                       <% } %>
                     </div>
                   </td>
@@ -124,14 +124,14 @@
       fileTitle.textContent = `Preview: ${filename}`;
       fileContainer.innerHTML = '';
       
-      const fileUrl = `/api/forms/preview/${filename}`;
+      const fileUrl = filename; // DB stores the full URL/path like /public/uploads/cvs/...
       
       if (filename.toLowerCase().endsWith('.pdf')) {
         fileContainer.innerHTML = `<iframe class="file-embed" src="${fileUrl}"></iframe>`;
       } else if (['.jpg', '.jpeg', '.png', '.gif'].some(ext => filename.toLowerCase().endsWith(ext))) {
         fileContainer.innerHTML = `<img class="file-embed" src="${fileUrl}" alt="Preview" style="object-fit: contain;" />`;
       } else {
-        fileContainer.innerHTML = `<p>File type not supported for preview. <a href="/api/forms/download/${filename}" download>Download instead</a></p>`;
+        fileContainer.innerHTML = `<p>File type not supported for preview. <a href="${fileUrl}" download>Download instead</a></p>`;
       }
       
       fileModal.classList.add('show');

@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const { sequelize, User } = require('./models');
 const authRoutes = require('./routes/auth');
 const formRoutes = require('./routes/forms');
@@ -32,9 +33,6 @@ app.use(cors({
       callback(null, true);
       return;
     }
-
-    // The live domain may change between deployments, so reflect any browser origin
-    // instead of hard-failing with a 500 on admin/API requests.
     callback(null, true);
   },
   credentials: true,
@@ -44,7 +42,9 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use('/static', express.static(path.join(__dirname, process.env.UPLOAD_DIR || 'uploads')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'public')));
 
 app.use('/api/auth', authRoutes);
@@ -55,9 +55,9 @@ app.get('/', (req, res) => res.send('tspl-admin-backend running'));
 
 async function ensureSuper() {
   const count = await User.count();
-  if (count === 0 && process.env.SUPERUSER_EMAIL && process.env.SUPERUSER_PASSWORD) {
-    const hash = await bcrypt.hash(process.env.SUPERUSER_PASSWORD, 10);
-    await User.create({ email: process.env.SUPERUSER_EMAIL, passwordHash: hash, role: 'super' });
+  if (count === 0 && process.env.SUPER_ADMIN_EMAIL && process.env.SUPER_ADMIN_PASSWORD) {
+    const hash = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD, 10);
+    await User.create({ email: process.env.SUPER_ADMIN_EMAIL, passwordHash: hash, role: 'super' });
     console.log('Created initial superuser from env');
   }
 }

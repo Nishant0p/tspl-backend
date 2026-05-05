@@ -6,7 +6,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const STRAPI_ENDPOINT = process.env.STRAPI_ENDPOINT;
-const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads';
+const UPLOAD_DIR = path.join(__dirname, '../public/uploads/cvs');
 
 async function appendExcel(sheetName, row) {
   const file = path.join(UPLOAD_DIR, `${sheetName}.xlsx`);
@@ -55,8 +55,8 @@ exports.submit = async (req, res) => {
       await forwardToStrapi('/services', data);
     } else if (type === 'job') {
       // handle file uploads
-      const pdf = req.files && req.files['pdf'] ? req.files['pdf'][0].filename : null;
-      const cv = req.files && req.files['cv'] ? req.files['cv'][0].filename : null;
+      const pdf = req.files && req.files['pdf'] ? '/public/uploads/cvs/' + req.files['pdf'][0].filename : null;
+      const cv = req.files && req.files['cv'] ? '/public/uploads/cvs/' + req.files['cv'][0].filename : null;
       created = await Job.create({ ...data, pdf, cv });
       await appendExcel('jobs', { createdAt: new Date().toISOString(), ...data, pdf, cv });
       await forwardToStrapi('/jobs', { ...data, pdf, cv });

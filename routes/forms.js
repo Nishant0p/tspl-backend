@@ -7,7 +7,7 @@ const fs = require('fs');
 const { authenticate } = require('../utils/middleware');
 require('dotenv').config();
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads';
+const UPLOAD_DIR = path.join(__dirname, '../public/uploads/cvs');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const storage = multer.diskStorage({
