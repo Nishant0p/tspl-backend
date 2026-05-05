@@ -56,6 +56,8 @@ exports.login = async (req, res) => {
 
 exports.createAdmin = async (req, res) => {
   try {
+    console.log('createAdmin invoked', { by: req.user ? { id: req.user.id, email: req.user.email, role: req.user.role } : null });
+    console.log('createAdmin body', { email: req.body && req.body.email, hasPassword: !!(req.body && req.body.password) });
     // only superuser
     if (!req.user || req.user.role !== 'super') return res.status(403).json({ error: 'forbidden' });
     const { email, password } = req.body;
