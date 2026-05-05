@@ -15,6 +15,9 @@
         <p>See all frontend submissions in one place and jump into any section when needed.</p>
       </div>
       <div class="header-actions">
+        <% if (user && user.role === 'super') { %>
+          <a class="ghost-btn" href="/admin/add-admin">Add Admin</a>
+        <% } %>
         <a class="ghost-btn" href="/admin/logout">Logout</a>
       </div>
     </header>

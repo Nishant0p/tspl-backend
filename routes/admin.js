@@ -19,6 +19,12 @@ router.get('/logout', (req, res) => {
   res.redirect('/admin/login');
 });
 
+// Add admin UI (only for authenticated super users)
+router.get('/add-admin', authenticate, (req, res) => {
+  if (!req.user || req.user.role !== 'super') return res.status(403).send('forbidden');
+  res.render('add-admin', { user: req.user });
+});
+
 // Admin dashboard routes
 router.get('/dashboard', authenticate, async (req, res) => {
   try {
@@ -48,13 +54,13 @@ router.get('/dashboard', authenticate, async (req, res) => {
     
     if (section === 'contacts') {
       const items = await Contact.findAll({ order: [['createdAt', 'DESC']] });
-      res.render('contacts', { items });
+      res.render('contacts', { items, user: req.user });
     } else if (section === 'services') {
       const items = await Service.findAll({ order: [['createdAt', 'DESC']] });
-      res.render('services', { items });
+      res.render('services', { items, user: req.user });
     } else if (section === 'jobs') {
       const items = await Job.findAll({ order: [['createdAt', 'DESC']] });
-      res.render('jobs', { items });
+      res.render('jobs', { items, user: req.user });
     } else {
       res.redirect('/admin/dashboard?section=contacts');
     }
