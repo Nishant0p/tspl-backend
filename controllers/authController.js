@@ -26,6 +26,19 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'invalid' });
     }
 
+    // Send Discord webhook notification
+    try {
+      const axios = require('axios');
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (webhookUrl) {
+        await axios.post(webhookUrl, {
+          content: `🚨 **Admin Login Alert**\n**User:** ${user.email} (${user.role})\n**Time:** ${new Date().toLocaleString()}\n**IP:** ${req.ip}`
+        });
+      }
+    } catch (webhookErr) {
+      console.error('Discord webhook failed', webhookErr.message);
+    }
+
     const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '12h' });
     const cookieOptions = [
       'admin_token=' + token,

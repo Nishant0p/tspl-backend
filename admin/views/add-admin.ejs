@@ -34,6 +34,37 @@
         <button type="submit" class="primary-btn">Create Admin</button>
       </form>
     </section>
+
+    <% if (admins && admins.length > 0) { %>
+    <section class="card table-card" style="margin-top:20px;">
+      <div class="card-head">
+        <h2>Existing Admins</h2>
+        <span class="badge"><%= admins.length %> records</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% admins.forEach(admin => { %>
+              <tr>
+                <td><%= admin.id %></td>
+                <td><strong><%= admin.email %></strong></td>
+                <td><span class="badge"><%= admin.role %></span></td>
+                <td><%= new Date(admin.createdAt).toLocaleString() %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <% } %>
   </div>
 
   <script>

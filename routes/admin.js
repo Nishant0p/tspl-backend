@@ -20,9 +20,15 @@ router.get('/logout', (req, res) => {
 });
 
 // Add admin UI (only for authenticated super users)
-router.get('/add-admin', authenticate, (req, res) => {
+router.get('/add-admin', authenticate, async (req, res) => {
   if (!req.user || req.user.role !== 'super') return res.status(403).send('forbidden');
-  res.render('add-admin', { user: req.user });
+  try {
+    const { User } = require('../models');
+    const admins = await User.findAll({ where: { role: 'admin' }, order: [['createdAt', 'DESC']] });
+    res.render('add-admin', { user: req.user, admins });
+  } catch (err) {
+    res.status(500).send('Error loading admins');
+  }
 });
 
 // Admin dashboard routes
