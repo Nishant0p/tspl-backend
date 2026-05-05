@@ -8,13 +8,20 @@ const JWT_SECRET = process.env.JWT_SECRET || 'devsecret';
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const wantsBrowserRedirect = req.body.browserLogin === '1';
     if (!email || !password) return res.status(400).json({ error: 'missing' });
 
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(401).json({ error: 'invalid' });
+    if (!user) {
+      if (wantsBrowserRedirect) return res.redirect('/admin/login?error=1');
+      return res.status(401).json({ error: 'invalid' });
+    }
 
     const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) return res.status(401).json({ error: 'invalid' });
+    if (!ok) {
+      if (wantsBrowserRedirect) return res.redirect('/admin/login?error=1');
+      return res.status(401).json({ error: 'invalid' });
+    }
 
     const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, JWT_SECRET, { expiresIn: '12h' });
     const cookieOptions = [
@@ -30,9 +37,17 @@ exports.login = async (req, res) => {
     }
 
     res.setHeader('Set-Cookie', cookieOptions.join('; '));
+
+    if (wantsBrowserRedirect) {
+      return res.redirect('/admin/dashboard?section=contacts');
+    }
+
     res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
     console.error('Login failed', error);
+    if (req.body && req.body.browserLogin === '1') {
+      return res.redirect('/admin/login?error=1');
+    }
     res.status(500).json({ error: 'login_failed' });
   }
 };

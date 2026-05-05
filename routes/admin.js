@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Contact, Service, Job } = require('../models');
+const authController = require('../controllers/authController');
 const { authenticate } = require('../utils/middleware');
 
 router.get('/', (req, res) => {
@@ -8,8 +9,10 @@ router.get('/', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  res.render('login');
+  res.render('login', { error: req.query.error === '1' });
 });
+
+router.post('/login', authController.login);
 
 router.get('/logout', (req, res) => {
   res.setHeader('Set-Cookie', 'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax');
