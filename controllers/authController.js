@@ -55,13 +55,21 @@ exports.login = async (req, res) => {
 };
 
 exports.createAdmin = async (req, res) => {
-  // only superuser
-  if (!req.user || req.user.role !== 'super') return res.status(403).json({ error: 'forbidden' });
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'missing' });
-  const existing = await User.findOne({ where: { email } });
-  if (existing) return res.status(400).json({ error: 'exists' });
-  const hash = await bcrypt.hash(password, 10);
-  const created = await User.create({ email, passwordHash: hash, role: 'admin' });
-  res.json({ id: created.id, email: created.email });
+  try {
+    // only superuser
+    if (!req.user || req.user.role !== 'super') return res.status(403).json({ error: 'forbidden' });
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'missing' });
+
+    const existing = await User.findOne({ where: { email } });
+    if (existing) return res.status(400).json({ error: 'exists' });
+
+    const hash = await bcrypt.hash(password, 10);
+    const created = await User.create({ email, passwordHash: hash, role: 'admin' });
+    res.json({ id: created.id, email: created.email });
+  } catch (err) {
+    console.error('createAdmin failed', err);
+    if (err.name === 'SequelizeUniqueConstraintError') return res.status(400).json({ error: 'exists' });
+    res.status(500).json({ error: 'create_failed' });
+  }
 };
