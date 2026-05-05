@@ -10,6 +10,7 @@ exports.login = async (req, res) => {
   const wantsBrowserRedirect = req.body.browserLogin === '1' || acceptHeader.includes('text/html') || acceptHeader.includes('application/xhtml+xml');
 
   try {
+    console.log('login invoked', { ip: req.ip, body: { email: req.body && req.body.email, hasPassword: !!(req.body && req.body.password) } });
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'missing' });
 
