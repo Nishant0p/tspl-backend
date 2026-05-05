@@ -105,11 +105,12 @@
   </div>
 
   <!-- Full Screen Preview -->
-  <div id="fileModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 10000; flex-direction: column;">
-    <div style="padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; align-items: center;">
-      <button onclick="closeModal()" style="padding: 8px 16px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 4px; font-weight: 500;">&larr; Back</button>
+  <div id="fileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 2147483647; flex-direction: column;">
+    <div style="height: 60px; padding: 0 20px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between;">
+      <button onclick="closeModal()" style="padding: 8px 16px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 4px; font-weight: 600; color: #333;">&larr; Back to Dashboard</button>
+      <span style="font-weight: 500; color: #666; font-size: 14px;">Document Viewer</span>
     </div>
-    <div id="fileContainer" style="flex: 1; width: 100%; height: calc(100vh - 60px);"></div>
+    <div id="fileContainer" style="flex: 1; width: 100%; height: calc(100vh - 60px); overflow: hidden; background: #e5e7eb;"></div>
   </div>
 
   <script>
@@ -121,19 +122,21 @@
       const fileUrl = filename; 
       
       if (filename.toLowerCase().endsWith('.pdf')) {
-        fileContainer.innerHTML = `<iframe src="${fileUrl}" style="width: 100%; height: 100%; border: none;"></iframe>`;
+        fileContainer.innerHTML = `<iframe src="${fileUrl}" style="width: 100%; height: 100%; border: none; display: block;"></iframe>`;
       } else if (['.jpg', '.jpeg', '.png', '.gif'].some(ext => filename.toLowerCase().endsWith(ext))) {
-        fileContainer.innerHTML = `<img src="${fileUrl}" alt="Document" style="width: 100%; height: 100%; object-fit: contain;" />`;
+        fileContainer.innerHTML = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"><img src="${fileUrl}" alt="Document" style="max-width: 100%; max-height: 100%; object-fit: contain;" /></div>`;
       } else {
         fileContainer.innerHTML = `<div style="padding: 20px;"><p>File type not supported for preview. <a href="${fileUrl}" download>Download instead</a></p></div>`;
       }
       
+      document.body.style.overflow = 'hidden';
       fileModal.style.display = 'flex';
     }
 
     function closeModal() {
       const fileModal = document.getElementById('fileModal');
       fileModal.style.display = 'none';
+      document.body.style.overflow = '';
       document.getElementById('fileContainer').innerHTML = '';
     }
   </script>
